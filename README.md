@@ -121,12 +121,11 @@ Este é um projeto educacional. Sinta-se livre para melhorar a implementação o
 
 ## 📝 Licença
 
-[Adicione a licença do seu projeto]
+MIT
 
 ## 👨‍💻 Autor
 
-[Seu nome/matrícula]
+Felipe Echeverria Vilhalva
 
 ## 📞 Contato
-
-[Seu email]
+https://www.linkedin.com/in/felipevilhalva/
