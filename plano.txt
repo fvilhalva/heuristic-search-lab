@@ -1,0 +1,22 @@
+1. Criar estrutura do projeto
+2. Criar classe/estrutura de Nó
+3. Criar representação genérica de Problema
+4. Implementar Mapa da Romênia
+5. Implementar BFS
+6. Implementar DFS
+7. Implementar Custo Uniforme
+8. Implementar Greedy
+9. Implementar A*
+10. Testar todos no Mapa da Romênia
+11. Implementar representação do 8-puzzle
+12. Implementar geração de sucessores do 8-puzzle
+13. Implementar heurística de peças fora do lugar
+14. Implementar heurística Manhattan
+15. Rodar BFS, Greedy e A* no puzzle
+16. Comparar resultados
+17. Fazer relatório curto com prints/tabelas
+
+Uninformed (BFS/DFS) → sem estruturas complexas
+UCS → introduz heap com custo
+Greedy → heap com heurística
+A* → heap com ambos (mais conceitual)

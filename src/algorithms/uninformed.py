@@ -4,6 +4,7 @@ from collections import deque
 from typing import Optional, Tuple, List
 from src.utils.node import Node
 
+# BFS and DFS implementations adapted from:
 
 class SearchResult:
     """Result of a search."""

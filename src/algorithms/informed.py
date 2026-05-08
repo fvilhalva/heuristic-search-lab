@@ -4,6 +4,7 @@ import heapq
 from typing import Optional, List
 from src.utils.node import Node
 
+#  Greedy Search and A* Search implementations adapted from:
 
 class SearchResult:
     """Result of a search."""
