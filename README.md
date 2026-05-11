@@ -1,131 +1,144 @@
 # Heuristic Search Lab
 
-Implementação de algoritmos de busca não informada e informada aplicados a problemas clássicos de IA, como o 8-puzzle e o mapa da Romênia.
+Implementação em Python de algoritmos de busca não informada e informada aplicados ao **Mapa da Romênia** e ao **8-puzzle**.
 
-## 📋 Descrição
+O programa possui entrada interativa pelo terminal: o professor pode escolher o problema, digitar estado inicial/objetivo e escolher o algoritmo.
 
-Este projeto implementa diversos algoritmos de busca em espaço de estados para resolver problemas clássicos de Inteligência Artificial:
+## Algoritmos implementados
 
-- **Algoritmos não informados**: BFS (Busca em Largura), DFS (Busca em Profundidade)
-- **Algoritmos informados**: Busca de Custo Uniforme, Busca Gulosa (Greedy), A*
-- **Problemas**: 8-Puzzle, Mapa da Romênia
+### Busca não informada
 
-## 🛠️ Requisitos
+- BFS / Busca em Largura
+- DFS / Busca em Profundidade, com limite configurável
+- Busca de Custo Uniforme
 
-- Python 3.8+
-- pip (gerenciador de pacotes Python)
+### Busca informada
 
-## 📦 Instalação
+- Greedy / Busca Gulosa
+- A*
 
-```bash
-# Clone o repositório
-git clone <seu-repositorio>
-cd heuristic-search-lab
-
-# (Opcional) Crie um ambiente virtual
-python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
-
-# Instale as dependências (se houver)
-pip install -r requirements.txt
-```
-
-## 🚀 Como Usar
-
-```bash
-# Execute um exemplo específico
-python main.py
-
-# Ou execute um módulo específico
-python -m src.puzzles.eight_puzzle
-python -m src.graphs.romania_map
-```
-
-## 📁 Estrutura do Projeto
-
-```
-heuristic-search-lab/
-├── src/
-│   ├── algorithms/           # Implementação dos algoritmos de busca
-│   │   ├── uninformed.py     # BFS, DFS
-│   │   ├── informed.py       # Greedy, A*
-│   │   └── uniform_cost.py   # Busca de Custo Uniforme
-│   ├── puzzles/
-│   │   └── eight_puzzle.py   # Implementação do 8-Puzzle
-│   ├── graphs/
-│   │   └── romania_map.py    # Implementação do Mapa da Romênia
-│   └── utils/
-│       └── node.py           # Classe Node para representação de estados
-├── tests/                    # Testes unitários
-├── main.py                   # Script de execução principal
-├── requirements.txt          # Dependências do projeto
-└── README.md                 # Este arquivo
-```
-
-## 🎯 Algoritmos Implementados
-
-### Busca Não Informada
-
-- **BFS (Breadth-First Search)**: Expande nós por nível, garantindo a solução mais curta
-- **DFS (Depth-First Search)**: Expande nós em profundidade, útil para problemas com espaço de estados limitado
-
-### Busca Informada
-
-- **Busca de Custo Uniforme**: Expande nós com menor custo acumulado
-- **Busca Gulosa**: Utiliza heurística para expandir nó mais próximo do objetivo
-- **A***: Combina custo real com heurística, garantindo solução ótima
-
-## 🧩 Problemas Abordados
-
-### 8-Puzzle
-Puzzle deslizante 3x3 onde o objetivo é organizar os números de 1 a 8 em ordem crescente.
-
-```
-1 2 3
-4 5 6
-7 8 _
-```
+## Problemas implementados
 
 ### Mapa da Romênia
-Problema de planejamento de rota onde o objetivo é encontrar o caminho mais curto entre duas cidades.
 
-## 📊 Exemplo de Uso
+O mapa está representado como grafo ponderado. Cada cidade é um estado e cada estrada é uma transição com custo em quilômetros.
 
-```python
-from src.algorithms.uninformed import BFS
-from src.puzzles.eight_puzzle import EightPuzzle
+A heurística usada para Greedy e A* é a distância em linha reta até Bucharest, conforme o exemplo clássico da disciplina.
 
-# Criar instância do puzzle
-puzzle = EightPuzzle(initial_state=..., goal_state=...)
+Observação: se o objetivo digitado não for Bucharest, a heurística retorna `0`, para manter a correção do algoritmo. Nesse caso, A* se comporta como Busca de Custo Uniforme.
 
-# Executar busca BFS
-search = BFS()
-solution = search.solve(puzzle)
+### 8-puzzle
 
-print(f"Caminho para solução: {solution.path}")
-print(f"Nós expandidos: {solution.expanded_nodes}")
-print(f"Profundidade: {solution.depth}")
+O espaço vazio é representado por `0` ou `_`.
+
+Exemplo:
+
+```text
+1 2 3
+4 0 5
+6 7 8
 ```
 
-## 📈 Comparação de Algoritmos
+O programa valida:
 
-O projeto permite comparar a performance de diferentes algoritmos:
-- Número de nós expandidos
-- Profundidade da solução
-- Tempo de execução
-- Custo da solução (se aplicável)
+- se há exatamente 9 posições;
+- se os números de 0 a 8 aparecem uma única vez;
+- se o estado inicial é solucionável para o objetivo informado.
 
-## 🤝 Contribuições
+Heurísticas disponíveis:
 
-Este é um projeto educacional. Sinta-se livre para melhorar a implementação ou adicionar novos algoritmos/problemas.
+- peças fora do lugar;
+- distância Manhattan;
+- heurística zero.
 
-## 📝 Licença
+## Como executar
 
-MIT
+No diretório do projeto:
 
-## 👨‍💻 Autor
+```bash
+python main.py
+```
+
+Menu principal:
+
+```text
+1 - Resolver Mapa da Romênia
+2 - Resolver 8-Puzzle
+3 - Rodar demonstração rápida
+0 - Sair
+```
+
+## Exemplo: Mapa da Romênia
+
+Entrada:
+
+```text
+Escolha uma opção: 1
+Cidade inicial [Arad]: Arad
+Cidade objetivo [Bucharest]: Bucharest
+Escolha o algoritmo: 5
+```
+
+Saída esperada para A*:
+
+```text
+Caminho: Arad -> Sibiu -> Rimnicu Vilcea -> Pitesti -> Bucharest
+Custo total: 418
+```
+
+## Exemplo: 8-puzzle
+
+Entrada:
+
+```text
+Escolha uma opção: 2
+Estado inicial: 1 2 3 4 5 0 6 7 8
+Estado objetivo [1 2 3 4 0 5 6 7 8]: 1 2 3 4 0 5 6 7 8
+Heurística: 2
+Algoritmo: 5
+```
+
+O programa aceita também:
+
+```text
+123450678
+1,2,3,4,5,0,6,7,8
+1 2 3 4 5 _ 6 7 8
+```
+
+## Métricas exibidas
+
+Para cada execução, o programa mostra:
+
+- caminho solução;
+- custo total;
+- profundidade / número de passos;
+- nós expandidos;
+- tamanho máximo da fronteira;
+- tempo de execução;
+- ordem de expansão dos estados.
+
+## Estrutura
+
+```text
+heuristic-search-lab/
+├── main.py
+├── requirements.txt
+├── src/
+│   ├── algorithms/
+│   │   ├── informed.py
+│   │   ├── uniform_cost.py
+│   │   └── uninformed.py
+│   ├── graphs/
+│   │   └── romania_map.py
+│   ├── puzzles/
+│   │   └── eight_puzzle.py
+│   └── utils/
+│       ├── node.py
+│       └── search_result.py
+└── README.md
+```
+
+## Autor
 
 Felipe Echeverria Vilhalva
-
-## 📞 Contato
-https://www.linkedin.com/in/felipevilhalva/
