@@ -2,17 +2,6 @@ from collections import deque
 import heapq
 import itertools
 
-
-# ============================================================
-# 8-PUZZLE COM BFS, DFS, CUSTO UNIFORME, GREEDY E A*
-#
-# Representacao do estado: tupla de 9 inteiros (0 a 8),
-# onde 0 representa o espaco vazio. Exemplo:
-# (1, 2, 3,
-#  4, 0, 5,
-#  6, 7, 8)
-# ============================================================
-
 # Contador global para desempate em filas de prioridade.
 # Evita erro de comparacao quando duas prioridades sao iguais.
 CONTADOR = itertools.count()
@@ -165,10 +154,7 @@ def problema_tem_solucao(inicial, objetivo):
     return contar_inversoes(inicial) % 2 == contar_inversoes(objetivo) % 2
 
 
-# ============================================================
-# BUSCAS NÃO INFORMADAS
-# ============================================================
-
+# buscas não informadas
 def busca_largura(inicial, objetivo):
     # BFS: explora por camadas usando fila.
     # Garante encontrar o menor numero de movimentos (custo uniforme).
@@ -296,10 +282,7 @@ def busca_custo_uniforme(inicial, objetivo):
     return None, expandidos
 
 
-# ============================================================
-# BUSCAS INFORMADAS
-# ============================================================
-
+# Busca Informadas
 def busca_gulosa(inicial, objetivo):
     # Greedy best-first: escolhe sempre o menor h(n).
     # Nao garante optimalidade, mas pode ser rapido.
@@ -461,9 +444,6 @@ def busca_ida_estrela(inicial, objetivo):
         limite = novo_limite
 
 
-# ============================================================
-# MENU PRINCIPAL
-# ============================================================
 
 def escolher_algoritmo():
     # Menu simples para selecionar o algoritmo.
@@ -528,11 +508,11 @@ def main():
     elif opcao == "6":
         nome = "IDA* com Manhattan"
         solucao, expandidos = busca_ida_estrela(estado_inicial, estado_objetivo)
-
-    else:
+    elif opcao == "5":
         nome = "Busca de Custo Uniforme"
         solucao, expandidos = busca_custo_uniforme(estado_inicial, estado_objetivo)
-
+    else:
+        print("Opção Invalida")
     print("\n" + "=" * 60)
     print("RESULTADO")
     print("=" * 60)
