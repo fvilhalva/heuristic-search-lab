@@ -389,6 +389,78 @@ def busca_a_estrela(inicial, objetivo):
     return None, expandidos
 
 
+def ida_busca_limitada(no, objetivo, limite, caminho):
+    # Busca em profundidade com limite em f(n).
+    # Retorna (no_encontrado, menor_excesso, expandidos).
+    f = no.custo + manhattan(no.estado, objetivo)
+
+    if f > limite:
+        return None, f, 0
+
+    expandidos = 1
+
+    if no.estado == objetivo:
+        return no, f, expandidos
+
+    menor_excesso = float("inf")
+
+    for acao, novo_estado in obter_sucessores(no.estado):
+        if novo_estado in caminho:
+            continue
+
+        filho = No(
+            estado=novo_estado,
+            pai=no,
+            acao=acao,
+            custo=no.custo + 1,
+            profundidade=no.profundidade + 1
+        )
+
+        caminho.add(novo_estado)
+        encontrado, excesso, exp = ida_busca_limitada(
+            filho,
+            objetivo,
+            limite,
+            caminho
+        )
+        expandidos += exp
+        caminho.remove(novo_estado)
+
+        if encontrado is not None:
+            return encontrado, excesso, expandidos
+
+        if excesso < menor_excesso:
+            menor_excesso = excesso
+
+    return None, menor_excesso, expandidos
+
+
+def busca_ida_estrela(inicial, objetivo):
+    # IDA*: A* com aprofundamento iterativo no limite de f(n).
+    # Usa menos memoria que A*, mas pode reexpandir muitos nos.
+    limite = manhattan(inicial, objetivo)
+    expandidos_total = 0
+
+    while True:
+        no_inicial = No(inicial)
+        caminho = {inicial}
+        encontrado, novo_limite, expandidos = ida_busca_limitada(
+            no_inicial,
+            objetivo,
+            limite,
+            caminho
+        )
+        expandidos_total += expandidos
+
+        if encontrado is not None:
+            return encontrado, expandidos_total
+
+        if novo_limite == float("inf"):
+            return None, expandidos_total
+
+        limite = novo_limite
+
+
 # ============================================================
 # MENU PRINCIPAL
 # ============================================================
@@ -401,11 +473,12 @@ def escolher_algoritmo():
     print("3 - Greedy / Busca Gulosa")
     print("4 - A*")
     print("5 - Custo Uniforme")
+    print("6 - IDA*")
 
     while True:
         opcao = input("Escolha o algoritmo: ").strip()
 
-        if opcao in {"1", "2", "3", "4", "5"}:
+        if opcao in {"1", "2", "3", "4", "5", "6"}:
             return opcao
 
         print("Opção inválida.")
@@ -452,6 +525,10 @@ def main():
         nome = "A* com Manhattan"
         solucao, expandidos = busca_a_estrela(estado_inicial, estado_objetivo)
 
+    elif opcao == "6":
+        nome = "IDA* com Manhattan"
+        solucao, expandidos = busca_ida_estrela(estado_inicial, estado_objetivo)
+
     else:
         nome = "Busca de Custo Uniforme"
         solucao, expandidos = busca_custo_uniforme(estado_inicial, estado_objetivo)
@@ -485,11 +562,11 @@ def main():
         print(f"g(n) = {no.custo}")
 
         # h(n) e f(n) sao mostrados somente quando ha heuristica.
-        if opcao in {"3", "4"}:
+        if opcao in {"3", "4", "6"}:
             h = manhattan(no.estado, estado_objetivo)
             print(f"h(n) = {h}")
 
-            if opcao == "4":
+            if opcao in {"4", "6"}:
                 print(f"f(n) = g(n) + h(n) = {no.custo + h}")
 
         imprimir_estado(no.estado)
