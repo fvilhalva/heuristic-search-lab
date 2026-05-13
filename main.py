@@ -435,19 +435,6 @@ def main():
 
     opcao = escolher_algoritmo()
 
-    usar_heuristica = False
-
-    # Para Greedy e A*, pergunta se deve usar a heuristica.
-    # Sem heuristica, esses metodos viram custo uniforme.
-    if opcao in {"3", "4"}:
-        resposta = input("Usar heurística Manhattan? [s/n]: ").strip().lower()
-
-        if resposta == "s":
-            usar_heuristica = True
-        else:
-            print("\nSem heurística. Executando Busca de Custo Uniforme.")
-            opcao = "5"
-
     # Executa o algoritmo escolhido.
     if opcao == "1":
         nome = "BFS / Busca em Largura"
@@ -457,11 +444,11 @@ def main():
         nome = "DFS / Busca em Profundidade"
         solucao, expandidos = busca_profundidade(estado_inicial, estado_objetivo)
 
-    elif opcao == "3" and usar_heuristica:
+    elif opcao == "3":
         nome = "Greedy / Busca Gulosa com Manhattan"
         solucao, expandidos = busca_gulosa(estado_inicial, estado_objetivo)
 
-    elif opcao == "4" and usar_heuristica:
+    elif opcao == "4":
         nome = "A* com Manhattan"
         solucao, expandidos = busca_a_estrela(estado_inicial, estado_objetivo)
 
