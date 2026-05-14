@@ -3,15 +3,10 @@ import os
 import heapq
 import itertools
 
-# Contador global para desempate em filas de prioridade
-# Evita erro de comparacao quando duas prioridades sao iguais
 CONTADOR = itertools.count()
 
 
 class No:
-    # Estrutura basica de um no na arvore de busca
-    # Guarda o estado, ponteiro para o pai e metadados
-    # usados para calcular custo, profundidade e imprimir caminho
     def __init__(self, estado, pai=None, acao=None, custo=0, profundidade=0):
         self.estado = estado
         self.pai = pai
@@ -53,28 +48,20 @@ def imprimir_estado(estado):
 
 
 def posicoes_objetivo(estado_objetivo):
-    # Mapeia cada valor para sua posicao no estado objetivo
-    # Ex: {valor: indice}
     return {valor: indice for indice, valor in enumerate(estado_objetivo)}
 
 
-# usado por: Greedy, A*, IDA*
 def manhattan(estado, estado_objetivo):
-    # Heuristica Manhattan: soma das distancias verticais + horizontais
-    # de cada peca ate sua posicao no objetivo. Ignora o 0
     pos_obj = posicoes_objetivo(estado_objetivo)
     distancia = 0
 
     for indice_atual, valor in enumerate(estado):
-        # O espaco vazio nao conta na heuristica
         if valor == 0:
             continue
 
         indice_objetivo = pos_obj[valor]
 
-        linha_atual, coluna_atual = divmod(
-            indice_atual, 3
-        )  # divmod converte o indice linear em linha e coluna
+        linha_atual, coluna_atual = divmod(indice_atual, 3)
         linha_objetivo, coluna_objetivo = divmod(indice_objetivo, 3)
 
         distancia += abs(linha_atual - linha_objetivo) + abs(
@@ -85,15 +72,11 @@ def manhattan(estado, estado_objetivo):
 
 
 def obter_sucessores(estado):
-    # Gera todos os sucessores validos, movendo o espaco vazio
-    # em ate quatro direcoes (cima, baixo, esquerda, direita)
     sucessores = []
 
-    # Localiza o indice do vazio (0).
     indice_zero = estado.index(0)
     linha, coluna = divmod(indice_zero, 3)
 
-    # Cada movimento e definido por (nome, delta_linha, delta_coluna)
     movimentos = [
         ("Cima", -1, 0),
         ("Baixo", 1, 0),
@@ -105,26 +88,21 @@ def obter_sucessores(estado):
         nova_linha = linha + dl
         nova_coluna = coluna + dc
 
-        # Verifica se o movimento permanece dentro do tabuleiro
         if 0 <= nova_linha < 3 and 0 <= nova_coluna < 3:
             novo_indice = nova_linha * 3 + nova_coluna
 
-            # se for valido, troca o 0 com a peça na nova posição
             novo_estado = list(estado)
             novo_estado[indice_zero], novo_estado[novo_indice] = (
                 novo_estado[novo_indice],
                 novo_estado[indice_zero],
             )
 
-            # Armazena a acao e o novo estado em formato imutavel (tupla)
             sucessores.append((acao, tuple(novo_estado)))
 
     return sucessores
 
 
 def reconstruir_caminho(no):
-    # Caminha pelos pais ate a raiz, depois inverte para obter
-    # o caminho do estado inicial ate a solucao
     caminho = []
 
     while no is not None:
@@ -136,8 +114,6 @@ def reconstruir_caminho(no):
 
 
 def contar_inversoes(estado):
-    # Conta pares invertidos (i < j, valores[i] > valores[j])
-    # Usado para verificar se o problema tem solucao no 8-puzzle
     valores = [x for x in estado if x != 0]
     inversoes = 0
 
@@ -150,29 +126,21 @@ def contar_inversoes(estado):
 
 
 def problema_tem_solucao(inicial, objetivo):
-    # Para tabuleiro 3x3, dois estados são compatíveis se possue
-    # a mesma paridade de inversões
     return contar_inversoes(inicial) % 2 == contar_inversoes(objetivo) % 2
 
 
-# buscas não informadas
 def busca_largura(inicial, objetivo):
-    # BFS: explora por camadas usando fila
-    # Garante encontrar o menor numero de movimentos (custo uniforme)
     fronteira = deque([No(inicial)])
     visitados = {inicial}
     expandidos = 0
 
     while fronteira:
-        # Remove o proximo no da fila (FIFO)
         no = fronteira.popleft()
         expandidos += 1
 
-        # Se chegou ao objetivo, retorna o no e estatisticas
         if no.estado == objetivo:
             return no, expandidos
 
-        # Expande sucessores nao visitados
         for acao, novo_estado in obter_sucessores(no.estado):
             if novo_estado not in visitados:
                 visitados.add(novo_estado)
@@ -189,7 +157,6 @@ def busca_largura(inicial, objetivo):
 
 
 def caminho_contem_estado(no, estado):
-    # Verifica se um estado ja aparece no caminho atual (evita ciclos) -  DFS, evita ciclos
     atual = no
 
     while atual is not None:
@@ -200,10 +167,6 @@ def caminho_contem_estado(no, estado):
     return False
 
 
-# DFS com visitados por caminho
-# essa versão evita voltar diretamente para o pai, mas ainda pode gerar ciclos mais longos. O limite de profundidade ajuda a evitar loops infinitos, mas pode impedir encontrar soluções mais profundas.
-# DFS com limite de profundidade
-# Usa pilha (LIFO) e evita repetir estados no caminho atual
 def busca_profundidade(inicial, objetivo, limite=50):
     fronteira = [No(inicial)]
     expandidos = 0
@@ -239,12 +202,9 @@ def busca_profundidade(inicial, objetivo, limite=50):
 
 
 def busca_custo_uniforme(inicial, objetivo):
-    # Custo uniforme: usa fila de prioridade pelo custo acumulado g(n) - menor custo acumulado g(n)
-    # Equivalente ao Dijkstra quando todos os custos sao 1
     fronteira = []
     no_inicial = No(inicial)
 
-    # (custo, contador, no) garante desempate estavel
     heapq.heappush(fronteira, (0, next(CONTADOR), no_inicial))
 
     melhor_custo = {inicial: 0}
@@ -253,7 +213,6 @@ def busca_custo_uniforme(inicial, objetivo):
     while fronteira:
         custo_atual, _, no = heapq.heappop(fronteira)
 
-        # Ignora caminhos mais caros que o melhor conhecido
         if custo_atual > melhor_custo[no.estado]:
             continue
 
@@ -265,7 +224,6 @@ def busca_custo_uniforme(inicial, objetivo):
         for acao, novo_estado in obter_sucessores(no.estado):
             novo_custo = no.custo + 1
 
-            # Atualiza se encontrou um caminho melhor para o estado
             if (
                 novo_estado not in melhor_custo
                 or novo_custo < melhor_custo[novo_estado]
@@ -285,11 +243,7 @@ def busca_custo_uniforme(inicial, objetivo):
     return None, expandidos
 
 
-# Busca Informadas
 def busca_gulosa(inicial, objetivo):
-    # Greedy best-first: escolhe sempre o menor h(n). - h(h) = distância Manhattan
-    # Nao garante optimalidade, mas pode ser rapido
-    # nao considera o custo ja gasto, pode ser rapida, mas pode levar a caminhos ruins
     fronteira = []
     no_inicial = No(inicial)
 
@@ -302,7 +256,6 @@ def busca_gulosa(inicial, objetivo):
     while fronteira:
         _, _, no = heapq.heappop(fronteira)
 
-        # Evita reprocessar estados
         if no.estado in visitados:
             continue
 
@@ -322,7 +275,6 @@ def busca_gulosa(inicial, objetivo):
                     profundidade=no.profundidade + 1,
                 )
 
-                # Prioridade e somente a heuristica h(n).
                 prioridade = manhattan(novo_estado, objetivo)
                 heapq.heappush(fronteira, (prioridade, next(CONTADOR), filho))
 
@@ -330,12 +282,9 @@ def busca_gulosa(inicial, objetivo):
 
 
 def busca_a_estrela(inicial, objetivo):
-    # A*: combina custo real g(n) e heuristica h(n). - melhor escolha
-    # Com Manhattan (admissivel), A* encontra solucao otima
     fronteira = []
     no_inicial = No(inicial)
 
-    # f(n) = g(n) + h(n)
     f = manhattan(inicial, objetivo)
     heapq.heappush(fronteira, (f, next(CONTADOR), no_inicial))
 
@@ -345,7 +294,6 @@ def busca_a_estrela(inicial, objetivo):
     while fronteira:
         _, _, no = heapq.heappop(fronteira)
 
-        # Descarta se ja existe um caminho melhor conhecido
         if no.custo > melhor_custo[no.estado]:
             continue
 
@@ -371,7 +319,6 @@ def busca_a_estrela(inicial, objetivo):
                     profundidade=no.profundidade + 1,
                 )
 
-                # f(n) = g(n) + h(n)
                 h = manhattan(novo_estado, objetivo)
                 f = novo_custo + h
 
@@ -381,8 +328,6 @@ def busca_a_estrela(inicial, objetivo):
 
 
 def ida_busca_limitada(no, objetivo, limite, caminho):
-    # Busca em profundidade com limite em f(n)
-    # Retorna (no_encontrado, menor_excesso, expandidos)
     f = no.custo + manhattan(no.estado, objetivo)
 
     if f > limite:
@@ -421,11 +366,7 @@ def ida_busca_limitada(no, objetivo, limite, caminho):
     return None, menor_excesso, expandidos
 
 
-# Iterative Deepening A*
-# usa menos memoria doq o A*, mas pode recalcular e expandir mais nós
 def busca_ida_estrela(inicial, objetivo):
-    # IDA*: A* com aprofundamento iterativo no limite de f(n)
-    # Usa menos memoria que A*, mas pode reexpandir muitos nos
     limite = manhattan(inicial, objetivo)
     expandidos_total = 0
 
@@ -477,17 +418,36 @@ def perguntar_repetir():
         print("Opção inválida.")
 
 
+def perguntar_repetir_entradas():
+    while True:
+        resposta = input("Deseja repetir as últimas entradas? [s/n]: ").strip().lower()
+
+        if resposta in {"s", "sim"}:
+            return True
+
+        if resposta in {"n", "nao", "não"}:
+            return False
+
+        print("Opção inválida.")
+
+
 def limpar_terminal():
     os.system("cls" if os.name == "nt" else "clear")
 
 
 def main():
+    estado_inicial = None
+    estado_objetivo = None
+
     while True:
         limpar_terminal()
         print("8-PUZZLE")
 
-        estado_inicial = ler_estado("estado inicial")
-        estado_objetivo = ler_estado("estado objetivo")
+        if estado_inicial is None or estado_objetivo is None:
+            estado_inicial = ler_estado("estado inicial")
+            estado_objetivo = ler_estado("estado objetivo")
+        else:
+            print("Usando as últimas entradas.")
 
         print("\nEstado inicial:")
         imprimir_estado(estado_inicial)
@@ -560,10 +520,8 @@ def main():
             else:
                 print(f"Passo {i}: mover espaço vazio para {no.acao}")
 
-            # g(n): custo acumulado desde o inicio
             print(f"g(n) = {no.custo}")
 
-            # h(n) e f(n) sao mostrados somente quando ha heuristica
             if opcao in {"3", "4", "6"}:
                 h = manhattan(no.estado, estado_objetivo)
                 print(f"h(n) = {h}")
@@ -575,6 +533,15 @@ def main():
 
         if not perguntar_repetir():
             break
+
+        if perguntar_repetir_entradas():
+            limpar_terminal()
+            continue
+
+        estado_inicial = None
+        estado_objetivo = None
+
+        limpar_terminal()
 
 
 if __name__ == "__main__":
