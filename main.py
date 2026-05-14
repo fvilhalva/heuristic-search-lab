@@ -24,7 +24,7 @@ def ler_estado(nome):
     print(f"\nDigite o {nome}.")
     print("Use 0 para representar o espaço vazio.")
     print("Exemplo: 1 2 3 4 0 5 6 7 8")
-    
+
     while True:
         entrada = input(f"{nome}: ").strip().split()
 
@@ -47,7 +47,7 @@ def ler_estado(nome):
 
 def imprimir_estado(estado):
     for i in range(0, 9, 3):
-        linha = estado[i:i + 3]
+        linha = estado[i : i + 3]
         print(" ".join("_" if x == 0 else str(x) for x in linha))
     print()
 
@@ -71,11 +71,15 @@ def manhattan(estado, estado_objetivo):
             continue
 
         indice_objetivo = pos_obj[valor]
- 
-        linha_atual, coluna_atual = divmod(indice_atual, 3) # divmod converte o indice linear em linha e coluna
+
+        linha_atual, coluna_atual = divmod(
+            indice_atual, 3
+        )  # divmod converte o indice linear em linha e coluna
         linha_objetivo, coluna_objetivo = divmod(indice_objetivo, 3)
 
-        distancia += abs(linha_atual - linha_objetivo) + abs(coluna_atual - coluna_objetivo)
+        distancia += abs(linha_atual - linha_objetivo) + abs(
+            coluna_atual - coluna_objetivo
+        )
 
     return distancia
 
@@ -94,7 +98,7 @@ def obter_sucessores(estado):
         ("Cima", -1, 0),
         ("Baixo", 1, 0),
         ("Esquerda", 0, -1),
-        ("Direita", 0, 1)
+        ("Direita", 0, 1),
     ]
 
     for acao, dl, dc in movimentos:
@@ -109,7 +113,7 @@ def obter_sucessores(estado):
             novo_estado = list(estado)
             novo_estado[indice_zero], novo_estado[novo_indice] = (
                 novo_estado[novo_indice],
-                novo_estado[indice_zero]
+                novo_estado[indice_zero],
             )
 
             # Armazena a acao e o novo estado em formato imutavel (tupla)
@@ -177,11 +181,12 @@ def busca_largura(inicial, objetivo):
                     pai=no,
                     acao=acao,
                     custo=no.custo + 1,
-                    profundidade=no.profundidade + 1
+                    profundidade=no.profundidade + 1,
                 )
                 fronteira.append(filho)
 
     return None, expandidos
+
 
 def caminho_contem_estado(no, estado):
     # Verifica se um estado ja aparece no caminho atual (evita ciclos) -  DFS, evita ciclos
@@ -194,10 +199,12 @@ def caminho_contem_estado(no, estado):
 
     return False
 
+
 # DFS com visitados por caminho
 # essa versão evita voltar diretamente para o pai, mas ainda pode gerar ciclos mais longos. O limite de profundidade ajuda a evitar loops infinitos, mas pode impedir encontrar soluções mais profundas.
-    # DFS com limite de profundidade
-    # Usa pilha (LIFO) e evita repetir estados no caminho atual
+# DFS com limite de profundidade
+# Usa pilha (LIFO) e evita repetir estados no caminho atual
+def busca_profundidade(inicial, objetivo, limite=50):
     fronteira = [No(inicial)]
     expandidos = 0
 
@@ -223,7 +230,7 @@ def caminho_contem_estado(no, estado):
                 pai=no,
                 acao=acao,
                 custo=no.custo + 1,
-                profundidade=no.profundidade + 1
+                profundidade=no.profundidade + 1,
             )
 
             fronteira.append(filho)
@@ -259,7 +266,10 @@ def busca_custo_uniforme(inicial, objetivo):
             novo_custo = no.custo + 1
 
             # Atualiza se encontrou um caminho melhor para o estado
-            if novo_estado not in melhor_custo or novo_custo < melhor_custo[novo_estado]:
+            if (
+                novo_estado not in melhor_custo
+                or novo_custo < melhor_custo[novo_estado]
+            ):
                 melhor_custo[novo_estado] = novo_custo
 
                 filho = No(
@@ -267,7 +277,7 @@ def busca_custo_uniforme(inicial, objetivo):
                     pai=no,
                     acao=acao,
                     custo=novo_custo,
-                    profundidade=no.profundidade + 1
+                    profundidade=no.profundidade + 1,
                 )
 
                 heapq.heappush(fronteira, (novo_custo, next(CONTADOR), filho))
@@ -292,7 +302,7 @@ def busca_gulosa(inicial, objetivo):
     while fronteira:
         _, _, no = heapq.heappop(fronteira)
 
-        # Evita reprocessar estados.
+        # Evita reprocessar estados
         if no.estado in visitados:
             continue
 
@@ -309,7 +319,7 @@ def busca_gulosa(inicial, objetivo):
                     pai=no,
                     acao=acao,
                     custo=no.custo + 1,
-                    profundidade=no.profundidade + 1
+                    profundidade=no.profundidade + 1,
                 )
 
                 # Prioridade e somente a heuristica h(n).
@@ -347,7 +357,10 @@ def busca_a_estrela(inicial, objetivo):
         for acao, novo_estado in obter_sucessores(no.estado):
             novo_custo = no.custo + 1
 
-            if novo_estado not in melhor_custo or novo_custo < melhor_custo[novo_estado]:
+            if (
+                novo_estado not in melhor_custo
+                or novo_custo < melhor_custo[novo_estado]
+            ):
                 melhor_custo[novo_estado] = novo_custo
 
                 filho = No(
@@ -355,7 +368,7 @@ def busca_a_estrela(inicial, objetivo):
                     pai=no,
                     acao=acao,
                     custo=novo_custo,
-                    profundidade=no.profundidade + 1
+                    profundidade=no.profundidade + 1,
                 )
 
                 # f(n) = g(n) + h(n)
@@ -391,16 +404,11 @@ def ida_busca_limitada(no, objetivo, limite, caminho):
             pai=no,
             acao=acao,
             custo=no.custo + 1,
-            profundidade=no.profundidade + 1
+            profundidade=no.profundidade + 1,
         )
 
         caminho.add(novo_estado)
-        encontrado, excesso, exp = ida_busca_limitada(
-            filho,
-            objetivo,
-            limite,
-            caminho
-        )
+        encontrado, excesso, exp = ida_busca_limitada(filho, objetivo, limite, caminho)
         expandidos += exp
         caminho.remove(novo_estado)
 
@@ -425,10 +433,7 @@ def busca_ida_estrela(inicial, objetivo):
         no_inicial = No(inicial)
         caminho = {inicial}
         encontrado, novo_limite, expandidos = ida_busca_limitada(
-            no_inicial,
-            objetivo,
-            limite,
-            caminho
+            no_inicial, objetivo, limite, caminho
         )
         expandidos_total += expandidos
 
@@ -441,9 +446,7 @@ def busca_ida_estrela(inicial, objetivo):
         limite = novo_limite
 
 
-
 def escolher_algoritmo():
-    # Menu simples para selecionar o algoritmo.
     print("\nAlgoritmos disponíveis:")
     print("1 - BFS / Busca em Largura")
     print("2 - DFS / Busca em Profundidade")
@@ -483,7 +486,6 @@ def main():
         limpar_terminal()
         print("8-PUZZLE")
 
-        # Entrada dos estados.
         estado_inicial = ler_estado("estado inicial")
         estado_objetivo = ler_estado("estado objetivo")
 
@@ -493,7 +495,6 @@ def main():
         print("Estado objetivo:")
         imprimir_estado(estado_objetivo)
 
-        # Verifica se a configuracao e solucionavel.
         if not problema_tem_solucao(estado_inicial, estado_objetivo):
             print("Este problema não possui solução.")
             if not perguntar_repetir():
@@ -538,7 +539,6 @@ def main():
         print(f"Algoritmo usado: {nome}")
         print(f"Nós expandidos: {expandidos}")
 
-        # Se nao encontrou solucao, encerra
         if solucao is None:
             print("Nenhuma solução encontrada.")
             if not perguntar_repetir():
