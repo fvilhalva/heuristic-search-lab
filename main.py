@@ -5,6 +5,8 @@ import itertools
 
 CONTADOR = itertools.count()
 
+# Nome: Felipe Echeverria Vilhalva RGM: 45611
+
 
 class No:
     def __init__(self, estado, pai=None, acao=None, custo=0, profundidade=0):
