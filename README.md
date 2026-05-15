@@ -143,7 +143,7 @@ Contribuições são bem-vindas. Para colaborar:
 Sugestões de melhorias:
 
 - Implementar outras heurísticas (ex.: número de tiles fora de posição).
-- Adicionar visualização passo a passo mais rica (ex.: saída gráfica ou web).
+- Adicionar visualização passo a passo mais rica (ex.: saída gráfica ou web)
 - Otimizações de desempenho e perfilamento.
 
 ## Licença

@@ -120,7 +120,7 @@ Contributing
 
 Contributions are welcome. To contribute:
 
-1. Open an issue describing your suggestion or bug.
+1. Open an issue describing your suggestion or bug
 2. Fork the repository and create a branch for your change.
 3. Send a pull request describing the changes and including tests when appropriate.
 
